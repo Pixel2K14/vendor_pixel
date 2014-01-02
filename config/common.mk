@@ -120,9 +120,10 @@ PRODUCT_PACKAGES += \
     LatinIME \
     BluetoothExt
     
-# Halo
+# PixelROM Stuff
 PRODUCT_PACKAGES += \
-    HALO
+    HALO \
+    DashClock
 
 # Optional CM packages
 PRODUCT_PACKAGES += \
@@ -135,18 +136,7 @@ PRODUCT_PACKAGES += \
 # Custom CM packages
     #Trebuchet \
 
-PRODUCT_PACKAGES += \
-    Launcher3 \
-    DSPManager \
-    libcyanogen-dsp \
-    audio_effects.conf \
-    CMWallpapers \
-    Apollo \
-    CMFileManager \
-    LockClock \
-    CMUpdater \
-    CMFota \
-    CMAccount
+
 
 # CM Hardware Abstraction Framework
 PRODUCT_PACKAGES += \
@@ -178,6 +168,19 @@ PRODUCT_PACKAGES += \
     oprofiled \
     sqlite3 \
     strace
+
+PRODUCT_PACKAGES += \
+    Launcher3 \
+    DSPManager \
+    libcyanogen-dsp \
+    audio_effects.conf \
+    CMWallpapers \
+    Apollo \
+    CMFileManager \
+    LockClock \
+    CMUpdater \
+    CMFota \
+    CMAccount
 
 # Openssh
 PRODUCT_PACKAGES += \
