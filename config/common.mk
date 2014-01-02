@@ -1,4 +1,4 @@
-PRODUCT_BRAND ?= cyanogenmod
+PRODUCT_BRAND ?= pixelrom
 
 SUPERUSER_EMBEDDED := true
 SUPERUSER_PACKAGE_PREFIX := com.android.settings.cyanogenmod.superuser
@@ -119,6 +119,10 @@ PRODUCT_PACKAGES += \
     Development \
     LatinIME \
     BluetoothExt
+    
+# Halo
+PRODUCT_PACKAGES += \
+    HALO
 
 # Optional CM packages
 PRODUCT_PACKAGES += \
