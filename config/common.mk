@@ -89,11 +89,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/cm/prebuilt/common/etc/init.local.rc:root/init.cm.rc
 
-# Compcache/Zram support
-PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/bin/compcache:system/bin/compcache \
-    vendor/cm/prebuilt/common/bin/handle_compcache:system/bin/handle_compcache
-
 # Bring in camera effects
 PRODUCT_COPY_FILES +=  \
     vendor/cm/prebuilt/common/media/LMprec_508.emd:system/media/LMprec_508.emd \
@@ -142,9 +137,6 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     org.cyanogenmod.hardware \
     org.cyanogenmod.hardware.xml
-
-PRODUCT_PACKAGES += \
-    CellBroadcastReceiver
 
 # Extra tools in CM
 PRODUCT_PACKAGES += \
@@ -273,6 +265,26 @@ PRODUCT_PROPERTY_OVERRIDES += \
   ro.cmlegal.url=http://www.cyanogenmod.org/docs/privacy
 
 -include vendor/cm-priv/keys/keys.mk
+
+CM_DISPLAY_VERSION := $(CM_VERSION)
+
+ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
+  ifneq ($(CM_BUILDTYPE), UNOFFICIAL)
+    ifndef TARGET_VENDOR_RELEASE_BUILD_ID
+      ifneq ($(CM_EXTRAVERSION),)
+        TARGET_VENDOR_RELEASE_BUILD_ID := $(CM_EXTRAVERSION)
+      else
+        TARGET_VENDOR_RELEASE_BUILD_ID := -$(shell date -u +%Y%m%d)
+      endif
+    else
+      TARGET_VENDOR_RELEASE_BUILD_ID := -$(TARGET_VENDOR_RELEASE_BUILD_ID)
+    endif
+    CM_DISPLAY_VERSION=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)$(TARGET_VENDOR_RELEASE_BUILD_ID)
+  endif
+endif
+
+PRODUCT_PROPERTY_OVERRIDES += \
+  ro.cm.display.version=$(CM_DISPLAY_VERSION)
 
 -include $(WORKSPACE)/hudson/image-auto-bits.mk
 
