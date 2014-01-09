@@ -1,4 +1,4 @@
-PRODUCT_BRAND ?= pixelrom
+PRODUCT_BRAND ?= pixel
 
 SUPERUSER_EMBEDDED := true
 SUPERUSER_PACKAGE_PREFIX := com.android.settings.cyanogenmod.superuser
@@ -29,7 +29,7 @@ $(eval TARGET_BOOTANIMATION_NAME := $(shell \
 endef
 $(foreach size,$(bootanimation_sizes), $(call check_and_set_bootanimation,$(size)))
 
-PRODUCT_BOOTANIMATION := vendor/cm/prebuilt/common/bootanimation/$(TARGET_BOOTANIMATION_NAME).zip
+PRODUCT_BOOTANIMATION := vendor/pixel/prebuilt/common/bootanimation/$(TARGET_BOOTANIMATION_NAME).zip
 endif
 
 PRODUCT_BUILD_PROP_OVERRIDES += BUILD_UTC_DATE=0
@@ -61,38 +61,38 @@ endif
 
 # Copy over the changelog to the device
 PRODUCT_COPY_FILES += \
-    vendor/cm/CHANGELOG.mkdn:system/etc/CHANGELOG-PIXEL.txt
+    vendor/pixel/CHANGELOG.mkdn:system/etc/CHANGELOG-PIXEL.txt
 
 # Backup Tool
 ifneq ($(WITH_GMS),true)
 PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/bin/backuptool.sh:system/bin/backuptool.sh \
-    vendor/cm/prebuilt/common/bin/backuptool.functions:system/bin/backuptool.functions \
-    vendor/cm/prebuilt/common/bin/50-cm.sh:system/addon.d/50-cm.sh \
-    vendor/cm/prebuilt/common/bin/blacklist:system/addon.d/blacklist
+    vendor/pixel/prebuilt/common/bin/backuptool.sh:system/bin/backuptool.sh \
+    vendor/pixel/prebuilt/common/bin/backuptool.functions:system/bin/backuptool.functions \
+    vendor/pixel/prebuilt/common/bin/50-cm.sh:system/addon.d/50-cm.sh \
+    vendor/pixel/prebuilt/common/bin/blacklist:system/addon.d/blacklist
 endif
 
 # init.d support
 PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner \
-    vendor/cm/prebuilt/common/bin/sysinit:system/bin/sysinit
+    vendor/pixel/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner \
+    vendor/pixel/prebuilt/common/bin/sysinit:system/bin/sysinit
 
 # userinit support
 PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit
+    vendor/pixel/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit
 
 # SELinux filesystem labels
 PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/etc/init.d/50selinuxrelabel:system/etc/init.d/50selinuxrelabel
+    vendor/pixel/prebuilt/common/etc/init.d/50selinuxrelabel:system/etc/init.d/50selinuxrelabel
 
 # CM-specific init file
 PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/etc/init.local.rc:root/init.cm.rc
+    vendor/pixel/prebuilt/common/etc/init.local.rc:root/init.cm.rc
 
 # Bring in camera effects
 PRODUCT_COPY_FILES +=  \
-    vendor/cm/prebuilt/common/media/LMprec_508.emd:system/media/LMprec_508.emd \
-    vendor/cm/prebuilt/common/media/PFFprec_600.emd:system/media/PFFprec_600.emd
+    vendor/pixel/prebuilt/common/media/LMprec_508.emd:system/media/LMprec_508.emd \
+    vendor/pixel/prebuilt/common/media/PFFprec_600.emd:system/media/PFFprec_600.emd
 
 # Enable SIP+VoIP on all targets
 PRODUCT_COPY_FILES += \
@@ -104,10 +104,10 @@ PRODUCT_COPY_FILES += \
 
 # This is CM!
 PRODUCT_COPY_FILES += \
-    vendor/cm/config/permissions/com.cyanogenmod.android.xml:system/etc/permissions/com.cyanogenmod.android.xml
+    vendor/pixel/config/permissions/com.cyanogenmod.android.xml:system/etc/permissions/com.cyanogenmod.android.xml
 
 # T-Mobile theme engine
-include vendor/cm/config/themes_common.mk
+include vendor/pixel/config/themes_common.mk
 
 # Required CM packages
 PRODUCT_PACKAGES += \
@@ -199,8 +199,8 @@ PRODUCT_PACKAGES += \
 
 # Terminal Emulator
 PRODUCT_COPY_FILES +=  \
-    vendor/cm/proprietary/Term.apk:system/app/Term.apk \
-    vendor/cm/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
+    vendor/pixel/proprietary/Term.apk:system/app/Term.apk \
+    vendor/pixel/proprietary/lib/armeabi/libjackpal-androidterm4.so:system/lib/libjackpal-androidterm4.so
 
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.root_access=1
@@ -214,65 +214,64 @@ endif
 # easy way to extend to add more packages
 -include vendor/extra/product.mk
 
-PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/dictionaries
-PRODUCT_PACKAGE_OVERLAYS += vendor/cm/overlay/common
+PRODUCT_PACKAGE_OVERLAYS += vendor/pixel/overlay/dictionaries
+PRODUCT_PACKAGE_OVERLAYS += vendor/pixel/overlay/common
 
-# Set CM_BUILDTYPE from the env RELEASE_TYPE, for jenkins compat
+# Set PIXEL_BUILDTYPE from the env RELEASE_TYPE, for jenkins compat
 
-ifndef CM_BUILDTYPE
+ifndef PIXEL_BUILDTYPE
     ifdef RELEASE_TYPE
-        # Starting with "CM_" is optional
-        RELEASE_TYPE := $(shell echo $(RELEASE_TYPE) | sed -e 's|^CM_||g')
-        CM_BUILDTYPE := $(RELEASE_TYPE)
+        # Starting with "PIXEL_" is optional
+        RELEASE_TYPE := $(shell echo $(RELEASE_TYPE) | sed -e 's|^PIXEL_||g')
+        PIXEL_BUILDTYPE := $(RELEASE_TYPE)
     endif
 endif
 
 ifdef BUILDTYPE_NIGHTLY
-        CM_BUILDTYPE := NIGHTLY
+        PIXEL_BUILDTYPE := NIGHTLY
 endif
 ifdef BUILDTYPE_AUTOTEST
-        CM_BUILDTYPE := AUTOTEST
+        PIXEL_BUILDTYPE := AUTOTEST
 endif
 ifdef BUILDTYPE_EXPERIMENTAL
-        CM_BUILDTYPE := EXPERIMENTAL
+        PIXEL_BUILDTYPE := EXPERIMENTAL
 endif
 ifdef BUILDTYPE_RELEASE
-        CM_BUILDTYPE := RELEASE
+        PIXEL_BUILDTYPE := RELEASE
 endif
 
-ifndef CM_BUILDTYPE
-        CM_BUILDTYPE := HOMEMADE
+ifndef PIXEL_BUILDTYPE
+        PIXEL_BUILDTYPE := UNOFFICIAL
 endif
 
 TARGET_PRODUCT_SHORT := $(TARGET_PRODUCT)
-TARGET_PRODUCT_SHORT := $(subst omni_,,$(TARGET_PRODUCT_SHORT))
+TARGET_PRODUCT_SHORT := $(subst pixel_,,$(TARGET_PRODUCT_SHORT))
 
 # Build the final version string
 ifdef BUILDTYPE_RELEASE
-        CM_VERSION := $(PLATFORM_VERSION)-$(TARGET_PRODUCT_SHORT)
+        PIXEL_VERSION := $(PLATFORM_VERSION)-$(TARGET_PRODUCT_SHORT)
 else
-ifeq ($(CM_BUILDTIME_LOCAL),y)
-        CM_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)-$(CM_BUILD)
+ifeq ($(PIXEL_BUILDTIME_LOCAL),y)
+        PIXEL_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)-$(PIXEL_BUILD)
 else
-        CM_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)-$(CM_BUILD)
+        PIXEL_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(PIXEL_BUILDTYPE)-$(PIXEL_BUILD)
 endif
 endif
 
 
 PRODUCT_PROPERTY_OVERRIDES += \
-  ro.pixel.version=$(CM_VERSION) \
-  ro.modversion=$(CM_VERSION) \
-  ro.cmlegal.url=http://www.cyanogenmod.org/docs/privacy
+  ro.pixel.version=$(PIXEL_VERSION) \
+  ro.modversion=$(PIXEL_VERSION)
 
 -include vendor/cm-priv/keys/keys.mk
 
-CM_DISPLAY_VERSION := $(CM_VERSION)
+PIXEL_DISPLAY_VERSION := $(PIXEL_VERSION)
 
 ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
-  ifneq ($(CM_BUILDTYPE), UNOFFICIAL)
+  ifneq ($(PIXEL_BUILDTYPE), UNOFFICIAL)
     ifndef TARGET_VENDOR_RELEASE_BUILD_ID
-      ifneq ($(CM_EXTRAVERSION),)
-        TARGET_VENDOR_RELEASE_BUILD_ID := $(CM_EXTRAVERSION)
+      ifneq ($(PIXEL_EXTRAVERSION),)
+        TARGET_VENDOR_RELEASE_BUILD_ID := $(PIXEL_EXTRAVERSION)
       else
         TARGET_VENDOR_RELEASE_BUILD_ID := -$(shell date -u +%Y%m%d)
       endif
@@ -284,8 +283,6 @@ ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
 endif
 
 PRODUCT_PROPERTY_OVERRIDES += \
-  ro.cm.display.version=$(CM_DISPLAY_VERSION)
-
--include $(WORKSPACE)/hudson/image-auto-bits.mk
+  ro.pixel.display.version=$(PIXEL_DISPLAY_VERSION)
 
 -include vendor/cyngn/product.mk
