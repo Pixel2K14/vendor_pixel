@@ -128,11 +128,6 @@ PRODUCT_PACKAGES += \
     Basic \
     libemoji
 
-# Custom CM packages
-    #Trebuchet \
-
-
-
 # CM Hardware Abstraction Framework
 PRODUCT_PACKAGES += \
     org.cyanogenmod.hardware \
