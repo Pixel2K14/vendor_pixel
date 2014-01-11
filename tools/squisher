@@ -1,37 +1,16 @@
 #!/bin/bash
 #
-# Squish a CM otapackage for distribution
+# Squish a PixelROM otapackage for distribution
+# credit for original version: CM
 #
-# cyanogen
-# AOKP
 
-. $ANDROID_BUILD_TOP/vendor/pixel/tools/colors
+export ANDROID_BUILD_TOP=$ANDROID_BUILD_TOP
 
-OUT_TARGET_HOST=`uname -a | grep Darwin`
-if [ -z "$OUT_TARGET_HOST" ]
-then
-   OUT_TARGET_HOST=linux-x86
-   MD5=md5sum
-   XARGS="xargs --max-args=1 --max-procs `grep 'processor' /proc/cpuinfo|wc -l`"
-   SED=sed
-else
-   OUT_TARGET_HOST=darwin-x86
-   MD5="md5 -r "
-   XARGS="xargs -n 1 -P `sysctl hw.ncpu | awk '{print $2}'`"
-   SED=gsed
-fi
+. $ANDROID_BUILD_TOP/vendor/pixel/tools/functions
 
 if [ -z "$OUT" -o ! -d "$OUT" ]; then
-	echo -e "ERROR: $0 only works with a full build environment. $OUT should exist."
-	exit 1
-fi
-
-# out/ dir defined elsewhere
-if [ ! -z $OUT_DIR_COMMON_BASE ]; then
-	TREE_NAME=`basename $ANDROID_BUILD_TOP`
-	OUT_DIR=$OUT_DIR_COMMON_BASE/$TREE_NAME
-else
-	OUT_DIR=$ANDROID_BUILD_TOP/out
+    echo -e $CL_RED"ERROR: $0 only works with a full build environment. $OUT should exist."$CL_RST
+    exit 1
 fi
 
 if [ "$TARGET_BUILD_TYPE" = "debug" ]; then
@@ -39,171 +18,177 @@ if [ "$TARGET_BUILD_TYPE" = "debug" ]; then
 elif [ "$TARGET_BUILD_VARIANT" = "userdebug" ]; then
     OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-eng.$USER.zip
 else
-    OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$TARGET_BUILD_VARIANT.$USER.zip
+#    OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$TARGET_BUILD_VARIANT.$USER.zip
+    OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-eng.$USER.zip
 fi
 if [ ! -f "$OTAPACKAGE" ]; then
-	echo -e "$OTAPACKAGE doesn't exist!";
-	exit 1
+    echo -e $CL_RED"$OTAPACKAGE doesn't exist!"$CL_RST;
+    exit 1
 fi
 
-OPTICHARGER=$ANDROID_BUILD_TOP/vendor/aokp/tools/opticharger
 QUIET=-q
 DELETE_BINS="applypatch applypatch_static check_prereq recovery updater"
 
-
 # Some products want a squashfs for xbin for space
 case "$TARGET_PRODUCT" in
-	cyanogen_dream_sapphire) WANT_SQUASHFS=1 ;;
-	*) WANT_SQUASHFS=0 ;;
+    cyanogen_dream_sapphire) WANT_SQUASHFS=1 ;;
+    *) WANT_SQUASHFS=0 ;;
 esac
 
 if [ "$WANT_SQUASHFS" -eq 1 ]; then
-	fatal=0
-	MKSQUASHFS_VER_REQ=4
-	if type mksquashfs >/dev/null 2>&1; then
-		if mksquashfs -version | grep -q "version $MKSQUASHFS_VER_REQ"; then :; else
-			echo -e
-			echo -e $CL_RED"ERROR: mksquashfs must be at least version $MKSQUASHFS_VER_REQ for this build."$CL_RST
-			fatal=1
-		fi
-	else
-		echo -e
-		echo -e $CL_RED"ERROR: $TARGET_PRODUCT requires mksquashfs."$CL_RST
-		fatal=1
-	fi
+    fatal=0
+    MKSQUASHFS_VER_REQ=4
+    if type mksquashfs >/dev/null 2>&1; then
+        if mksquashfs -version | grep -q "version $MKSQUASHFS_VER_REQ"; then :; else
+            echo
+            echo "ERROR: mksquashfs must be at least version $MKSQUASHFS_VER_REQ for this build."
+                fatal=1
+            fi
+        else
+            echo
+            echo "ERROR: $TARGET_PRODUCT requires mksquashfs."
+            fatal=1
+        fi
 
-	if [ "$fatal" -ne 0 ]; then
-		echo -e
-		echo -e $CL_YLW"       Unoptimized package is still available at"
-		echo -e "         $OTAPACKAGE"$CL_RST
-		exit $fatal
-	fi
+        if [ "$fatal" -ne 0 ]; then
+            echo
+            echo "       Unoptimized package is still available at"
+            echo "         $OTAPACKAGE"
+            exit $fatal
+        fi
 fi
 
 REPACK=$OUT/repack.d
-echo -e $CL_CYN"Sanitizing environment..."$CL_RST
+printf "Sanitizing environment..."
 rm -rf $REPACK
 mkdir -p $REPACK
-echo -e
-
+echo
 
 # Unpack the otapackage and opticharge all apks
 mkdir $REPACK/ota
 (
 cd $REPACK/ota
-echo -e $CL_CYN"Unpacking $OTAPACKAGE..."$CL_RST
+printf "Unpacking $OTAPACKAGE..."
 unzip $QUIET $OTAPACKAGE
-echo -e
+ln -s  $OUT/data $REPACK/ota/data
+echo
 
 # Move all apks to the same directory so xargs can
 # use also with framework-res.apk. This allow process
 # framework-res.apk in parallel with other apks
 mkdir -p $REPACK/parallel
 cd $REPACK/parallel
-cp $REPACK/ota/system/framework/framework-res.apk .
-cp $REPACK/ota/system/app/*.apk .
+ln -s $REPACK/ota/system/framework/framework-res.apk .
+for x in $REPACK/ota/system/app/*.apk; do ln -s $x .; done
 
-# Do optimization in parallel
-find ./ -name \*.apk | $XARGS $OPTICHARGER
-
-# Move optimized apks to repack directory
-mv -f $REPACK/parallel/framework-res.apk $REPACK/ota/system/framework/framework-res.apk
-mv -f $REPACK/parallel/*.apk $REPACK/ota/system/app/
-
-# Optimize /priv-app/
-cp $REPACK/ota/system/priv-app/*.apk .
-find ./ -name \*.apk | $XARGS $OPTICHARGER
-mv -f $REPACK/parallel/*.apk $REPACK/ota/system/priv-app/
+find ./ -name \*.apk | $HALFXARGS schedtool -B -n 1 -e ionice -n 1 $OPTICHARGER
 
 # Return to directory
 cd $REPACK/ota
 rm -rf $REPACK/parallel
 )
 
-
 if [ "$WANT_SQUASHFS" -eq 1 ]; then
-	squash_opts="-force-uid 1000 -force-gid 1000 -no-progress -noappend -no-exports -no-recovery"
-	updater=$REPACK/ota/META-INF/com/google/android/updater-script
+    squash_opts="-force-uid 1000 -force-gid 1000 -no-progress -noappend -no-exports -no-recovery"
+    updater=$REPACK/ota/META-INF/com/google/android/updater-script
 
-	# Relocate su
-	cp -a $REPACK/ota/system/xbin $REPACK/_xbin/
-	rm -f $REPACK/_xbin/su $REPACK/ota/system/bin/su
-	mv $REPACK/ota/system/xbin/su $REPACK/ota/system/bin/su
-	chmod -R 555 $REPACK/_xbin/*
+    # Relocate su
+    cp -a $REPACK/ota/system/xbin $REPACK/_xbin/
+    rm -f $REPACK/_xbin/su $REPACK/ota/system/bin/su
+    mv $REPACK/ota/system/xbin/su $REPACK/ota/system/bin/su
+    chmod -R 555 $REPACK/_xbin/*
 
-	# Create symlinks for su and busybox (since updater-script can't work on the squashfs filesystem).
-	# Forgive me for the regex hell here.
-	ln -s ../bin/su $REPACK/_xbin/su
-	for link in `sed -n -e's/,//g' -e'/symlink(.*busybox/,/xbin.*);/p' $updater | tr '"' '\n' | sed -n -e'\,/system/xbin/,s,/system/xbin/,,p'`
-	do
-		ln -s busybox $REPACK/_xbin/$link
-	done
+    # Create symlinks for su and busybox (since updater-script can't work on the squashfs filesystem).
+    # Forgive me for the regex hell here.
+    ln -s ../bin/su $REPACK/_xbin/su
+    for link in `sed -n -e's/,//g' -e'/symlink(.*busybox/,/xbin.*);/p' $updater | tr '"' '\n' | sed -n -e'\,/system/xbin/,s,/system/xbin/,,p'`
+    do
+        ln -s busybox $REPACK/_xbin/$link
+    done
 
-	# Create the squashfs with new and improved symlinkage!
-	mksquashfs $REPACK/_xbin/* $REPACK/_xbin.sqf $squash_opts
-	rm -rf $REPACK/ota/system/xbin/*
-	mv $REPACK/_xbin.sqf $REPACK/ota/system/xbin/xbin.sqf
-	chmod 444 $REPACK/ota/system/xbin/xbin.sqf
+    # Create the squashfs with new and improved symlinkage!
+    mksquashfs $REPACK/_xbin/* $REPACK/_xbin.sqf $squash_opts
+    rm -rf $REPACK/ota/system/xbin/*
+    mv $REPACK/_xbin.sqf $REPACK/ota/system/xbin/xbin.sqf
+    chmod 444 $REPACK/ota/system/xbin/xbin.sqf
 
-	# Remove xbin stuff and fix up updater-script
-	$SED -i -e's,system/xbin/su,system/bin/su,g' -e'/xbin/d' $updater
+    # Remove xbin stuff and fix up updater-script
+    $SED -i -e's,system/xbin/su,system/bin/su,g' -e'/xbin/d' $updater
 fi
-
-
-# Fix build.prop
-$SED -i \
-	-e '/ro\.kernel\.android\.checkjni/d' \
-	-e '/ro\.build\.type/s/eng/user/' \
-	$REPACK/ota/system/build.prop
-
-
-# Delete unnecessary binaries
-( cd $REPACK/ota/system/bin; echo -e $DELETE_BINS | xargs rm -f; )
-
-# Delete leftover wireless driver
-# rm -rf $REPACK/ota/system/lib/modules/*/kernel/drivers/net
 
 # No need for recovery
 rm -rf $REPACK/ota/recovery
 
-# Strip modules
-[ -d $REPACK/ota/system/lib/modules ] && \
-	find $REPACK/ota/system/lib/modules -name "*.ko" -print0 | xargs -0 arm-eabi-strip --strip-unneeded
-
 # Determine what to name the new signed package
+MODVERSION=`sed -n -e'/ro\.modversion/s/^.*=//p' $REPACK/ota/system/build.prop`
+OUTVERSION="$TARGET_PRODUCT"_"$MODVERSION"
+OUTFILE=$OUT/$OUTVERSION.zip
 
-#MODVERSION=`sed -n -e'/ro\.modversion/s/^.*=//p' $REPACK/ota/system/build.prop`
-VERSION=`sed -n -e'/ro.pixel.version/s/^.*=//p' $REPACK/ota/system/build.prop`
-MODVERSION="$VERSION"
-OUTFILE=$OUT/$MODVERSION.zip
+# add qcom optimized dalvikVM
+case $1 in msm8610|msm8x26|msm8226|msm8x74|msm8974|msm8960|msm8660|msm7627a|msm7630_surf|apq8084|mpq8092)
+  echo -e $CL_GRN"Proprietary transplant:" $CL_RST" MOTO X QCOM BLOBS!"
+  echo -e $CL_RED"\
+ ____ ____ ____ _________ ____ ____ ____ 
+||"$CL_YLW"W"$CL_RED" |||"$CL_YLW"T"$CL_RED" |||"$CL_YLW"F"$CL_RED" |||       |||"$CL_YLW"B"$CL_RED" |||"$CL_YLW"B"$CL_RED" |||"$CL_YLW"Q"$CL_RED" ||
+||__|||__|||__|||_______|||__|||__|||__||
+|/__\|/__\|/__\|/_______\|/__\|/__\|/__\|
+"$CL_RST
+  for blob in \
+    bin/dalvikvm \
+    bin/dexopt \
+    lib/libcutils.so \
+    lib/libdvm.so \
+    lib/libqc-opt.so
+  do
+    cp -f "$ANDROID_BUILD_TOP/vendor/pixel/proprietary/qcom/$blob" "$REPACK/ota/system/$blob"
+  done
+  grep -c dalvik.vm.dexopt-data-only $REPACK/ota/system/build.prop && sed -i 's/dalvik\.vm\.dexopt-data-only=0/dalvik\.vm\.dexopt-data-only=1/g' $REPACK/ota/system/build.prop || echo dalvik.vm.dexopt-data-only=1 >> $REPACK/ota/system/build.prop
+  ;;
+esac
 
 # Pack it up and sign
-echo -e $CL_CYN"Zipping package..."$CL_RST
+printf "Zipping package..."
 ( cd $REPACK/ota; zip $QUIET -r $REPACK/update.zip . )
-echo -e
-echo -e $CL_CYN"Signing package..."$CL_RST
+echo
+printf "Signing package..."
 SECURITYDIR=$ANDROID_BUILD_TOP/build/target/product/security
-java -Xmx1024m \
-	-jar $OUT_DIR/host/$OUT_TARGET_HOST/framework/signapk.jar \
-	-w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
-	$REPACK/update.zip $OUTFILE
-echo -e
-echo -e $CL_CYN"Cleaning up..."$CL_RST
+java -Xmx2048m \
+    -jar $ANDROID_BUILD_TOP/out/host/$OUT_TARGET_HOST/framework/signapk.jar \
+    -w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
+    $REPACK/update.zip $OUTFILE
+echo
+printf "Cleaning up..."
 rm -rf $REPACK
-echo -e
+echo
 
 # Create a md5 checksum image of the repacked package
 (
+echo -e ""
+echo -e ""
+echo -e $CL_GRN"================  "$CL_RST OTA package information $CL_GRN"  ================"$CL_RST
+echo -e ""
+echo -e $CL_BLU"Product name:"$CL_RST $TARGET_PRODUCT-ota-eng.$USER.zip
+
 img=`basename $OUTFILE`
 cd `dirname $OUTFILE`
-$MD5 $img >$img.md5sum
+STRING="$TARGET_PRODUCT-ota-eng.$USER.zip"
+OTASIZE=`ls -lah $STRING | awk '{ print $5}' `
+echo -e $CL_BLU"Package Size: "$CL_YLW "$OTASIZE" $CL_RST
+echo -e $CL_BLU"Target Location: " $CL_RST
+echo -e $CL_YLW"$OUT/$TARGET_PRODUCT-ota-eng.$USER.zip" $CL_RST
+echo ""
+
+$MD5 $img >$img.md5
 ZIPSIZE=`ls -lah $OUTFILE | awk '{ print $5}' `
-echo -e $CL_CYN"===========-Package complete-==========="$CL_RST
-echo -e $CL_CYN"zip:"$CL_MAG" $OUTFILE"$CL_RST
-echo -e $CL_CYN"md5:"$CL_MAG" $(cat $img.md5sum | awk '{ print $1 }')"$CL_RST
-echo -e $CL_CYN"size:"$CL_MAG" $ZIPSIZE"$CL_RST
-echo -e $CL_CYN"========================================"$CL_RST
-echo -e
+echo -e $CL_GRN"================"$CL_RST $TARGET_PRODUCT-$TARGET_BUILD_VARIANT: $CL_RED"completed"$CL_RST $CL_GRN"================"$CL_RST
+echo ""
+echo -e $CL_BLU"Product name:"$CL_RST $OUTVERSION.zip
+echo -e $CL_BLU"Package Size: "$CL_YLW"$ZIPSIZE     "
+echo -e $CL_BLU"md5:"$CL_RST $CL_YLW" $(cat $img.md5 | awk '{ print $1 }')"$CL_RST
+echo -e $CL_BLU"Target location:"$CL_RST
+echo -e $CL_YLW $OUTFILE $CL_RST
+echo ""
+echo ""
 )
 
 exit 0
