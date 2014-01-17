@@ -15,5 +15,4 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     Mms \
     Stk \
-    CellBroadcastReceiver \
-    WhisperPush
+    CellBroadcastReceiver
