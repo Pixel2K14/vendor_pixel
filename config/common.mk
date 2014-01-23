@@ -118,7 +118,8 @@ PRODUCT_PACKAGES += \
 # PixelROM Stuff
 PRODUCT_PACKAGES += \
     HALO \
-    DashClock
+    DashClock \
+    KitKatWhite
 
 # Optional CM packages
 PRODUCT_PACKAGES += \
