@@ -108,7 +108,7 @@ PRODUCT_COPY_FILES += \
 
 # Optimized Dalvik from Moto X
 PRODUCT_COPY_FILE += \
-    $(call find-copy-subdir-files,*,vendor/pixel/proprietary/qcom,system)
+    $(call find-copy-subdir-files,*,vendor/pixel/prebuilt/qcom,system)
 
 # T-Mobile theme engine
 include vendor/pixel/config/themes_common.mk
