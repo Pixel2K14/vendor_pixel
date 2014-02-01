@@ -102,9 +102,13 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     frameworks/base/data/keyboards/Vendor_045e_Product_028e.kl:system/usr/keylayout/Vendor_045e_Product_0719.kl
 
-# This is CM!
+# This is not CM but still!
 PRODUCT_COPY_FILES += \
     vendor/pixel/config/permissions/com.cyanogenmod.android.xml:system/etc/permissions/com.cyanogenmod.android.xml
+
+# Optimized Dalvik from Moto X
+PRODUCT_COPY_FILE += \
+    $(call find-copy-subdir-files,*,vendor/pixel/proprietary/qcom,system)
 
 # T-Mobile theme engine
 include vendor/pixel/config/themes_common.mk
@@ -118,7 +122,6 @@ PRODUCT_PACKAGES += \
 # PixelROM Stuff
 PRODUCT_PACKAGES += \
     HALO \
-    DashClock \
     KitKatWhite
 
 # Optional CM packages
