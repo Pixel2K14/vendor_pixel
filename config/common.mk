@@ -122,6 +122,7 @@ PRODUCT_PACKAGES += \
 # PixelROM Stuff
 PRODUCT_PACKAGES += \
     HALO \
+    OmniSwitch \
     KitKatWhite
 
 # Optional CM packages
