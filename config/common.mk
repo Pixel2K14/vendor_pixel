@@ -258,7 +258,7 @@ ifdef BUILDTYPE_RELEASE
         PIXEL_VERSION := $(PLATFORM_VERSION)-$(TARGET_PRODUCT_SHORT)
 else
 ifeq ($(PIXEL_BUILDTIME_LOCAL),y)
-        PIXEL_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(CM_BUILDTYPE)-$(PIXEL_BUILD)
+        PIXEL_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(PIXEL_BUILDTYPE)-$(PIXEL_BUILD)
 else
         PIXEL_VERSION := PixelROM-$(PLATFORM_VERSION)-$(shell date -u +%Y%m%d)-$(PIXEL_BUILDTYPE)-$(PIXEL_BUILD)
 endif
@@ -294,3 +294,11 @@ PRODUCT_PROPERTY_OVERRIDES += \
   ro.pixel.display.version=$(PIXEL_DISPLAY_VERSION)
 
 -include vendor/cyngn/product.mk
+
+
+# ROMStats
+PRODUCT_PRODUCT_OVERRIDES += \
+  ro.romstats.url=http://stats.pixelrom.tk
+  ro.romstats.name=PixelROM
+  ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION)
+  ro.romstats.tframe=7
