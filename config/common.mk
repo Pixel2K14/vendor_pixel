@@ -199,15 +199,6 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES +=  \
     vendor/pixel/proprietary/RomStats.apk:system/app/RomStats.apk \
-    
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.sys.root_access=1
-else
-
-PRODUCT_PROPERTY_OVERRIDES += \
-    persist.sys.root_access=0
-
-endif
 
 # Terminal Emulator
 PRODUCT_COPY_FILES +=  \
