@@ -301,7 +301,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 # ROMStats
 PRODUCT_PRODUCT_OVERRIDES += \
-  ro.romstats.url=http://stats.pixelrom.tk
-  ro.romstats.name=PixelROM
-  ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION)
+  ro.romstats.url=http://stats.pixelrom.tk \
+  ro.romstats.name=PixelROM \
+  ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION) \
   ro.romstats.tframe=7
