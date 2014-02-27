@@ -167,14 +167,9 @@ PRODUCT_PACKAGES += \
     DSPManager \
     libcyanogen-dsp \
     audio_effects.conf \
-    CMWallpapers \
     Apollo \
-    CMFileManager \
-    LockClock \
-    CMUpdater \
-    CMFota \
-    CMAccount
-
+    LockClock
+    
 # Openssh
 PRODUCT_PACKAGES += \
     scp \
@@ -288,7 +283,7 @@ ifneq ($(DEFAULT_SYSTEM_DEV_CERTIFICATE),build/target/product/security/testkey)
     else
       TARGET_VENDOR_RELEASE_BUILD_ID := -$(TARGET_VENDOR_RELEASE_BUILD_ID)
     endif
-    CM_DISPLAY_VERSION=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)$(TARGET_VENDOR_RELEASE_BUILD_ID)
+    PIXEL_DISPLAY_VERSION=$(PRODUCT_VERSION_MAJOR).$(PRODUCT_VERSION_MINOR)$(TARGET_VENDOR_RELEASE_BUILD_ID)
   endif
 endif
 endif
@@ -296,12 +291,11 @@ endif
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.pixel.display.version=$(PIXEL_DISPLAY_VERSION)
 
--include vendor/cyngn/product.mk
-
-
 # ROMStats
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.romstats.url=http://stats.pixelrom.tk \
   ro.romstats.name=PixelROM \
   ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION) \
   ro.romstats.tframe=7
+
+-include vendor/cyngn/product.mk
