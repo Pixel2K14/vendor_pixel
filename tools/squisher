@@ -52,13 +52,18 @@ mkdir -p $REPACK/parallel
 cd $REPACK/parallel
 cp $REPACK/ota/system/framework/framework-res.apk .
 cp $REPACK/ota/system/app/*.apk .
-cp $REPACK/ota/system/priv-app/*.apk .
+for f in $REPACK/ota/system/priv-app/*.apk; do
+    cp $f ./priv-app-$(basename $f)
+done
 
 # Do optimization in parallel
 find ./ -name \*.apk | $XARGS $OPTICHARGER
 
 # Move optimized apks to repack directory
 mv -f $REPACK/parallel/framework-res.apk $REPACK/ota/system/framework/framework-res.apk
+for f in $REPACK/parallel/priv-app*.apk; do
+    mv $f $REPACK/ota/system/priv-app/$(basename $f | cut -d'-' -f3)
+done
 mv -f $REPACK/parallel/*.apk $REPACK/ota/system/app/
 
 # Return to directory
@@ -68,9 +73,9 @@ rm -rf $REPACK/parallel
 
 # Fix build.prop
 $SED -i \
-	-e '/ro\.kernel\.android\.checkjni/d' \
-	-e '/ro\.build\.type/s/eng/user/' \
-	$REPACK/ota/system/build.prop
+        -e '/ro\.kernel\.android\.checkjni/d' \
+        -e '/ro\.build\.type/s/eng/user/' \
+        $REPACK/ota/system/build.prop
 
 # Determine what to name the new signed package
 MODVERSION=`sed -n -e'/ro\.pixel\.version/s/^.*=//p' $OUT/system/build.prop`
@@ -133,10 +138,13 @@ echo
 img=`basename $OUTFILE`
 cd `dirname $OUTFILE`
 $MD5 $img >$img.md5sum
-echo
-echo $CL_GRN"Package complete: $OUTFILE"$CL_RST
-echo $CL_GRN"md5: $(cat $img.md5sum | awk '{ print $1 }')"$CL_RST
-echo
+ZIPSIZE=`ls -lah $OUTFILE | awk '{ print $5}'`
+echo -e ""; echo -e ${cya}"Package complete:${ylw} $OUTFILE"${txtrst}
+echo -e ${cya}"ZIP:${ylw}  $img"${txtrst}
+echo -e ${cya}"MD5: ${ylw} `cat $img.md5sum | awk '{print $1}'`"${txtrst}
+echo -e ${cya}"SIZE:${ylw} $ZIPSIZE"${txtrst}
+MD5VAL=`cat $img.md5sum  | awk '{ print $1 }'`
+DEVICE=`echo -e $TARGET_PRODUCT | cut -d "_" -f 2`
 )
 
 exit 0
