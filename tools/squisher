@@ -139,12 +139,13 @@ img=`basename $OUTFILE`
 cd `dirname $OUTFILE`
 $MD5 $img >$img.md5sum
 ZIPSIZE=`ls -lah $OUTFILE | awk '{ print $5}'`
-echo -e ""; echo -e ${cya}"Package complete:${ylw} $OUTFILE"${txtrst}
-echo -e ${cya}"ZIP:${ylw}  $img"${txtrst}
-echo -e ${cya}"MD5: ${ylw} `cat $img.md5sum | awk '{print $1}'`"${txtrst}
-echo -e ${cya}"SIZE:${ylw} $ZIPSIZE"${txtrst}
+echo ""
+echo $CL_GRN"Package complete:${ylw} $OUTFILE"${txtrst}
+echo $CL_GRN"ZIP:${ylw}  $img"${txtrst}
+echo $CL_GRN"MD5: ${ylw} `cat $img.md5sum | awk '{print $1}'`"${txtrst}
+echo $CL_GRN"SIZE:${ylw} $ZIPSIZE"${txtrst}
 MD5VAL=`cat $img.md5sum  | awk '{ print $1 }'`
-DEVICE=`echo -e $TARGET_PRODUCT | cut -d "_" -f 2`
+DEVICE=`echo $TARGET_PRODUCT | cut -d "_" -f 2`
 )
 
 exit 0
