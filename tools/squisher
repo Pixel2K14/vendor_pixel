@@ -143,7 +143,7 @@ echo ""
 echo $CL_GRN"Package complete:${ylw} $OUTFILE"${txtrst}
 echo $CL_MAG"ZIP:${ylw}  $img"${txtrst}
 echo $CL_CYN"MD5: ${ylw} `cat $img.md5sum | awk '{print $1}'`"${txtrst}
-echo $CL_YLW"SIZE:${ylw} $ZIPSIZE"${txtrst}
+echo $CL_RST"SIZE:${ylw} $ZIPSIZE"${txtrst}
 MD5VAL=`cat $img.md5sum  | awk '{ print $1 }'`
 DEVICE=`echo $TARGET_PRODUCT | cut -d "_" -f 2`
 )
