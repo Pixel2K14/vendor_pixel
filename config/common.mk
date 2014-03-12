@@ -193,11 +193,6 @@ PRODUCT_PACKAGES += \
     Superuser \
     su
 
-#ROM Stats
-
-PRODUCT_COPY_FILES +=  \
-    vendor/pixel/proprietary/RomStats.apk:system/app/RomStats.apk \
-
 # Terminal Emulator
 PRODUCT_COPY_FILES +=  \
     vendor/pixel/proprietary/Term.apk:system/app/Term.apk \
@@ -290,12 +285,5 @@ endif
 
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.pixel.display.version=$(PIXEL_DISPLAY_VERSION)
-
-# ROMStats
-PRODUCT_PROPERTY_OVERRIDES += \
-  ro.romstats.url=http://stats.pixelrom.tk \
-  ro.romstats.name=PixelROM \
-  ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION) \
-  ro.romstats.tframe=7
 
 -include vendor/cyngn/product.mk
