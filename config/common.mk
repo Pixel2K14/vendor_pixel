@@ -203,6 +203,19 @@ PRODUCT_PROPERTY_OVERRIDES += \
 
 endif
 
+#ROM Stats
+
+PRODUCT_COPY_FILES +=  \
+vendor/pixel/proprietary/RomStats.apk:system/app/RomStats.apk \
+
+
+# ROMStats
+ PRODUCT_PROPERTY_OVERRIDES += \
+   ro.romstats.url=http://stats.pixelrom.tk \
+   ro.romstats.name=PixelROM \
+   ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION) \
+   ro.romstats.tframe=7
+   
 # easy way to extend to add more packages
 -include vendor/extra/product.mk
 
