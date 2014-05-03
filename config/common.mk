@@ -201,7 +201,7 @@ PRODUCT_COPY_FILES +=  \
 
 # AdAway
 PRODUCT_COPY_FILES += \
-    vendor/cm/prebuilt/common/app/org.adaway.apk:system/app/org.adaway.apk
+    vendor/pixel/prebuilt/common/app/org.adaway.apk:system/app/org.adaway.apk
 
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.root_access=1
@@ -280,7 +280,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
   ro.pixel.version=$(PIXEL_VERSION) \
   ro.modversion=$(PIXEL_VERSION)
 
--include vendor/cm-priv/keys/keys.mk
+-include vendor/pixel-priv/keys/keys.mk
 
 PIXEL_DISPLAY_VERSION := $(PIXEL_VERSION)
 
