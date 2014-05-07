@@ -117,18 +117,15 @@ PRODUCT_PACKAGES += \
     Development \
     LatinIME \
     BluetoothExt
-    
-# PixelROM Stuff
-PRODUCT_PACKAGES += \
-    HALO \
-    OmniSwitch \
-    KitKatWhite
 
 # Optional CM packages
 PRODUCT_PACKAGES += \
     VoicePlus \
     Basic \
-    libemoji
+    libemoji \
+    Trebuchet \
+    CMWallpapers \
+    CMFileManager
 
 # ChameleonOS Screen recorder
 PRODUCT_PACKAGES += \
