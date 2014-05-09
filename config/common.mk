@@ -75,6 +75,10 @@ PRODUCT_COPY_FILES += \
     vendor/pixel/prebuilt/common/bin/blacklist:system/addon.d/blacklist
 endif
 
+# Signature compatibility validation
+PRODUCT_COPY_FILES += \
+    vendor/cm/prebuilt/common/bin/otasigcheck.sh:system/bin/otasigcheck.sh
+
 # init.d support
 PRODUCT_COPY_FILES += \
     vendor/pixel/prebuilt/common/etc/init.d/00banner:system/etc/init.d/00banner \
