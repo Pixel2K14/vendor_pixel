@@ -1,8 +1,7 @@
 # T-Mobile theme engine
 PRODUCT_PACKAGES += \
-       ThemeManager \
        ThemeChooser \
-       com.tmobile.themes
+       ThemeProvider
 
 PRODUCT_COPY_FILES += \
        vendor/pixel/config/permissions/com.tmobile.software.themes.xml:system/etc/permissions/com.tmobile.software.themes.xml \
