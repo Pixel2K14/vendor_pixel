@@ -123,6 +123,7 @@ PRODUCT_PACKAGES += \
     VoicePlus \
     Basic \
     libemoji \
+    Launcher3 \
     Trebuchet \
     CMWallpapers \
     CMFileManager
@@ -161,12 +162,14 @@ PRODUCT_PACKAGES += \
     strace
 
 PRODUCT_PACKAGES += \
-    Launcher3 \
     DSPManager \
     libcyanogen-dsp \
     audio_effects.conf \
     Apollo \
     LockClock
+    
+PRODUCT_PACKAGES += \
+    PerformanceControl
     
 # Openssh
 PRODUCT_PACKAGES += \
