@@ -217,7 +217,7 @@ vendor/pixel/proprietary/RomStats.apk:system/app/RomStats.apk \
 
 # ROMStats
  PRODUCT_PROPERTY_OVERRIDES += \
-   ro.romstats.url=http://stats.pixelrom.tk \
+   ro.romstats.url=http://pixelstats.tk \
    ro.romstats.name=PixelROM \
    ro.romstats.version=-$(PIXEL_BUILDTYPE)-$(PLATFORM_VERSION) \
    ro.romstats.tframe=7
