@@ -161,7 +161,6 @@ PRODUCT_PACKAGES += \
     strace
 
 PRODUCT_PACKAGES += \
-    Launcher3 \
     DSPManager \
     libcyanogen-dsp \
     audio_effects.conf \
