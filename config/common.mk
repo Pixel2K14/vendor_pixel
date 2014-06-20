@@ -165,7 +165,8 @@ PRODUCT_PACKAGES += \
     libcyanogen-dsp \
     audio_effects.conf \
     Apollo \
-    LockClock
+    LockClock \
+    AboutPixel
     
 # Openssh
 PRODUCT_PACKAGES += \
