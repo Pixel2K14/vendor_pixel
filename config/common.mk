@@ -287,6 +287,7 @@ endif
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.pixel.version=$(PIXEL_VERSION) \
   ro.modversion=$(PIXEL_VERSION)
+  ro.pixel.releasetype=$(PIXEL_BUILDTYPE)
 
 -include vendor/pixel-priv/keys/keys.mk
 
